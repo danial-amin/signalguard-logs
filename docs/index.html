@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>signalguard-logs · Log AIOps Toolkit</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link href="styles.css" rel="stylesheet" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+    rel="stylesheet"
+  />
+</head>
+<body>
+  <div class="page">
+    <header class="header">
+      <div>
+        <h1>signalguard-logs</h1>
+        <p>Log intelligence and AIOps: parsing, template extraction, bursts, new patterns, semantic anomalies.</p>
+      </div>
+      <div class="header-meta">
+        <span class="pill">Python package</span>
+        <span id="last-updated">Sister toolkit to signalguard-aiops</span>
+      </div>
+    </header>
+
+    <main class="main">
+      <section class="cards">
+        <div class="card">
+          <h2>What it is</h2>
+          <p class="muted">
+            <strong>signalguard-logs</strong> is a log AIOps toolkit for structured parsing, template extraction, TF-IDF encoding,
+            and anomaly detection on logs: volume bursts, new error patterns, and semantic outliers.
+          </p>
+        </div>
+        <div class="card">
+          <h2>Core use cases</h2>
+          <p class="muted">
+            • Detect bursts of ERROR logs for a service<br />
+            • Flag previously unseen error templates<br />
+            • Identify semantically unusual log messages<br />
+            • Combine volume, templates, and semantics into one "log health" signal
+          </p>
+        </div>
+        <div class="card">
+          <h2>Tech stack</h2>
+          <p class="muted">
+            Python · NumPy · Pandas · scikit-learn · Regex / JSON parsing · TF-IDF · IsolationForest.
+          </p>
+        </div>
+        <div class="card">
+          <h2>Repository</h2>
+          <p class="muted">
+            <a href="https://github.com/danial-amin/signalguard-logs" target="_blank" rel="noopener">
+              View the GitHub repository →
+            </a>
+          </p>
+        </div>
+      </section>
+
+      <section class="anomalies">
+        <div class="anomaly-header">
+          <h3>Quick start</h3>
+          <p class="muted">
+            Install locally, parse your logs into <code>LogStream</code>, and plug them into high-level recipes.
+          </p>
+        </div>
+        <div class="anomaly-grid">
+          <div class="anomaly-card">
+            <div class="anomaly-title-row">
+              <span>Install</span>
+              <span class="badge-ok">CLI</span>
+            </div>
+            <div class="anomaly-body">
+              <pre><code>git clone https://github.com/danial-amin/signalguard-logs
+cd signalguard-logs
+pip install -e .</code></pre>
+            </div>
+          </div>
+          <div class="anomaly-card">
+            <div class="anomaly-title-row">
+              <span>Parse logs</span>
+              <span class="badge-warn">Parsing</span>
+            </div>
+            <div class="anomaly-body">
+              <pre><code>from signalguard_logs.models import LogStream
+from signalguard_logs.parsing import RegexLogParser
+
+parser = RegexLogParser()
+with open("app.log") as f:
+    records = list(parser.parse_lines(f))
+
+stream = LogStream(records)</code></pre>
+            </div>
+          </div>
+          <div class="anomaly-card">
+            <div class="anomaly-title-row">
+              <span>Error burst recipe</span>
+              <span class="badge-warn">Incidents</span>
+            </div>
+            <div class="anomaly-body">
+              <pre><code>from signalguard_logs.recipes import ErrorBurstRecipe
+
+recipe = ErrorBurstRecipe(service="checkout", level="ERROR")
+result = recipe.run(stream)
+burst_labels = result["labels"]</code></pre>
+            </div>
+          </div>
+          <div class="anomaly-card">
+            <div class="anomaly-title-row">
+              <span>New pattern recipe</span>
+              <span class="badge-danger">Patterns</span>
+            </div>
+            <div class="anomaly-body">
+              <pre><code>from signalguard_logs.recipes import NewErrorPatternRecipe
+
+recipe = NewErrorPatternRecipe(service="auth", level="ERROR")
+result = recipe.run(stream)
+new_pattern_labels = result["labels"]</code></pre>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="charts">
+        <div class="chart-card">
+          <div class="chart-header">
+            <h3>Detectors</h3>
+            <p class="muted">
+              LogBurstDetector · NewTemplateDetector · SemanticIForestDetector
+            </p>
+          </div>
+          <p class="muted">
+            <strong>LogBurstDetector</strong> groups logs into time windows and flags unusually high counts of ERROR-level records.<br /><br />
+            <strong>NewTemplateDetector</strong> uses simple template extraction to flag previously unseen error patterns, ideal for
+            catching new failure modes.<br /><br />
+            <strong>SemanticIForestDetector</strong> encodes messages with TF-IDF and uses IsolationForest to surface outlier messages.
+          </p>
+        </div>
+        <div class="chart-card">
+          <div class="chart-header">
+            <h3>Combined log health</h3>
+            <p class="muted">
+              Volume × Template novelty × Semantic outliers.
+            </p>
+          </div>
+          <p class="muted">
+            With <code>CombinedLogHealthRecipe</code>, you can produce a single per-log anomaly score that blends bursts, new patterns,
+            and semantic outliers — ready to be surfaced next to metric-based incidents from <code>signalguard-aiops</code>.
+          </p>
+        </div>
+      </section>
+    </main>
+  </div>
+</body>
+</html>
